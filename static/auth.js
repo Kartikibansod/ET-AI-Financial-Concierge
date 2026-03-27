@@ -191,6 +191,24 @@ function getOAuthCode() {
     return params.get("code") || "";
 }
 
+function getOAuthHashSession() {
+    const hash = window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : window.location.hash;
+    const params = new URLSearchParams(hash || "");
+    const accessToken = params.get("access_token") || "";
+    const refreshToken = params.get("refresh_token") || "";
+
+    if (!accessToken || !refreshToken) {
+        return null;
+    }
+
+    return {
+        access_token: accessToken,
+        refresh_token: refreshToken
+    };
+}
+
 function wait(ms) {
     return new Promise(resolve => {
         window.setTimeout(resolve, ms);
@@ -218,6 +236,22 @@ async function resolveSession(client) {
 }
 
 async function recoverOAuthSession(client) {
+    const hashSession = getOAuthHashSession();
+    if (hashSession) {
+        try {
+            const { data, error } = await client.auth.setSession(hashSession);
+            if (error) {
+                throw error;
+            }
+
+            const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+            window.history.replaceState({}, document.title, cleanUrl);
+            return data.session || null;
+        } catch (error) {
+            console.error("OAuth hash session recovery failed", error);
+        }
+    }
+
     const code = getOAuthCode();
     if (!code) {
         return null;
