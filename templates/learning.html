@@ -38,7 +38,7 @@
                             <label class="field"><span>Language</span><select id="settings-language"><option value="english">English</option><option value="hindi">Hindi</option><option value="marathi">Marathi</option></select></label>
                             <div class="settings-actions">
                                 <button class="report-btn" id="save-settings-button" type="button">Save Settings</button>
-                                <button class="mode-btn" id="reset-profile-button" type="button">Reset Profile</button>
+                                <button class="secondary-btn" id="reset-profile-button" type="button">Reset Profile</button>
                                 <button class="secondary-btn" id="logout-button" type="button">Logout</button>
                             </div>
                         </div>
@@ -55,19 +55,28 @@
                     <p class="sidebar-brand-copy">A teacher-like AI experience built for step-by-step understanding and clearer learning paths.</p>
                     <a class="sidebar-home-link" href="/">Back Home</a>
                 </div>
+                <div class="dashboard-card assistant-panel">
+                    <div class="assistant-panel-head">
+                        <div class="sidebar-title">AI Concierge</div>
+                        <div class="assistant-panel-status">Active</div>
+                    </div>
+                    <h3 id="assistant-panel-title">Hi there. I've analyzed your profile.</h3>
+                    <p class="assistant-panel-copy" id="assistant-panel-copy">Here are the most useful next steps to start with.</p>
+                    <div class="assistant-suggestion-list" id="assistant-suggestion-list"></div>
+                </div>
                 <div class="mode-panel dashboard-card">
                     <div class="sidebar-title">AI Modes</div>
                     <div class="mode-row">
-                        <button class="mode-btn active" data-mode="chat">💬 Ask AI</button>
-                        <button class="mode-btn" data-mode="research">🔍 Deep Research</button>
-                        <button class="mode-btn" data-mode="simplify">🧠 Simplify</button>
-                        <button class="mode-btn" data-mode="summarize">📄 Summarize</button>
-                        <button class="mode-btn" data-mode="alerts">🚨 Alerts</button>
-                        <button class="mode-btn" data-mode="highlights">🔥 Highlights</button>
+                        <button class="mode-btn active" data-mode="chat">Ask AI</button>
+                        <button class="mode-btn" data-mode="research">Deep Research</button>
+                        <button class="mode-btn" data-mode="simplify">Simplify</button>
+                        <button class="mode-btn" data-mode="summarize">Summarize</button>
+                        <button class="mode-btn" data-mode="alerts">Alerts</button>
+                        <button class="mode-btn" data-mode="highlights">Highlights</button>
                     </div>
                     <div class="mode-meta">
                         <label class="field inline-field"><span>Simplify Level</span><select id="simplify-level"><option value="basic">Basic</option><option value="medium">Medium</option><option value="advanced">Advanced</option></select></label>
-                        <label class="field inline-field"><span>🌍 Language</span><select id="language-select"><option value="english">English</option><option value="hindi">Hindi</option><option value="marathi">Marathi</option></select></label>
+                        <label class="field inline-field"><span>Language</span><select id="language-select"><option value="english">English</option><option value="hindi">Hindi</option><option value="marathi">Marathi</option></select></label>
                         <div class="mode-indicator" id="mode-indicator">Mode: Chat</div>
                         <button class="report-btn" id="report-button" type="button">Generate Report</button>
                     </div>
@@ -88,10 +97,31 @@
             </aside>
 
             <div class="dashboard-main">
+                <section class="concierge-recommendations concierge-recommendations-top">
+                    <div class="concierge-header">
+                        <div>
+                            <p class="sidebar-title">Recommended for YOU</p>
+                            <h2 id="concierge-recommendation-title">Your learning path starts with guided next steps</h2>
+                            <p class="concierge-copy" id="concierge-recommendation-copy">The concierge is prioritizing what you should understand before you take action.</p>
+                        </div>
+                    </div>
+                    <div class="concierge-recommendation-grid" id="concierge-recommendation-grid"></div>
+                </section>
+
+                <section class="dashboard-card today-actions-panel">
+                    <div class="today-actions-head">
+                        <div>
+                            <p class="sidebar-title">What you should do today</p>
+                            <h3 id="today-actions-title">Your concierge is prioritizing the next moves.</h3>
+                        </div>
+                    </div>
+                    <div class="today-actions-grid" id="today-actions-grid"></div>
+                </section>
+
                 <section class="section-intro section-intro-learning">
                     <div>
                         <p class="section-kicker">Learning AI Experience</p>
-                        <h2 id="section-greeting">Hi there 👋</h2>
+                        <h2 id="section-greeting">Hi there</h2>
                         <p class="section-copy">Let’s start learning step by step with beginner-friendly explanations, guided tracks, and calmer AI support.</p>
                     </div>
                     <div class="section-intro-grid">
@@ -111,6 +141,56 @@
                             <div class="experience-card-copy">Perfect for basics, definitions, examples, and learning by practical explanation.</div>
                         </div>
                     </div>
+                </section>
+
+                <section class="dashboard-card concierge-support-grid">
+                    <div class="profile-summary-card profile-summary-card-inline">
+                        <div class="profile-summary-head">
+                            <div>
+                                <p class="sidebar-title">Your Financial Profile</p>
+                                <h3 id="profile-summary-title">Profile snapshot</h3>
+                            </div>
+                            <div class="profile-summary-badge" id="profile-personality-badge">Balanced Learner</div>
+                        </div>
+                        <div class="profile-summary-grid">
+                            <div class="profile-summary-item">
+                                <span>Risk Level</span>
+                                <strong id="profile-risk-level">Medium</strong>
+                            </div>
+                            <div class="profile-summary-item">
+                                <span>Experience</span>
+                                <strong id="profile-experience-level">Beginner</strong>
+                            </div>
+                            <div class="profile-summary-item">
+                                <span>Goals</span>
+                                <strong id="profile-goals">Learn the basics</strong>
+                            </div>
+                            <div class="profile-summary-item">
+                                <span>Missing Areas</span>
+                                <strong id="profile-missing-areas">Needs investing foundations</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="services-marketplace">
+                        <div class="sidebar-title">Financial Services</div>
+                        <div class="service-card-grid">
+                            <a class="service-card" href="https://economictimes.indiatimes.com/topic/credit-card" target="_blank" rel="noreferrer">Credit Cards</a>
+                            <a class="service-card" href="https://economictimes.indiatimes.com/wealth/borrow/" target="_blank" rel="noreferrer">Loans</a>
+                            <a class="service-card" href="https://economictimes.indiatimes.com/wealth/insure/" target="_blank" rel="noreferrer">Insurance</a>
+                            <a class="service-card" href="https://economictimes.indiatimes.com/wealth" target="_blank" rel="noreferrer">Wealth Advisors</a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-card progress-panel">
+                    <div class="progress-panel-head">
+                        <div>
+                            <p class="sidebar-title">Your Progress</p>
+                            <h3>See how far your concierge setup has moved.</h3>
+                        </div>
+                    </div>
+                    <div class="progress-checklist" id="progress-checklist"></div>
                 </section>
 
                 <div id="system-status" class="system-status system-status-live">ET Concierge ready</div>
@@ -145,5 +225,5 @@
 {% endblock %}
 
 {% block page_scripts %}
-<script src="{{ url_for('static', filename='script.js', v='20260327a') }}"></script>
+<script src="{{ url_for('static', filename='script.js', v='20260327h') }}"></script>
 {% endblock %}

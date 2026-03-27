@@ -195,6 +195,31 @@ def decision_agent(profile, section):
     }
 
 
+def get_experience_level(profile):
+    level = str(profile.get("level") or "").strip().title()
+    if level:
+        return level
+
+    user_type = str(profile.get("user_type") or "").lower()
+    if "investor" in user_type:
+        return "Intermediate"
+    return "Beginner"
+
+
+def get_missing_areas(profile):
+    gaps = []
+    goal = str(profile.get("goal") or "").lower()
+
+    if not str(profile.get("income") or "").strip() and ("invest" in goal or "save" in goal):
+        gaps.append("You have not mapped monthly investing capacity yet.")
+    if get_experience_level(profile) == "Beginner":
+        gaps.append("You still need stronger finance basics before bigger decisions.")
+    if not str(profile.get("risk") or "").strip():
+        gaps.append("Your risk comfort is not fully defined yet.")
+
+    return gaps or ["You have not shared any current investments yet."]
+
+
 def fetch_rss_items(url, limit=5):
     """Fetch latest RSS items from an ET feed."""
     response = httpx.get(url, timeout=8, follow_redirects=True)
@@ -606,18 +631,24 @@ def build_ordered_summary_response(source_text, personality):
     response_lines = [
         f"Personality: {personality}",
         "",
-        overview,
+        f"Overview: {overview}",
+        "",
+        "Key Takeaways:",
     ]
 
     for index, point in enumerate(key_points, start=1):
         response_lines.append(f"{index}. {point}")
 
+    response_lines.append("")
+    response_lines.append("Insights:")
     if unique_companies:
-        response_lines.append("")
         response_lines.append(f"The early part of the page mentions companies or stocks like {', '.join(unique_companies)}.")
+    else:
+        response_lines.append("The first visible section sets the main context, so the top of the page matters most here.")
 
     response_lines.append("")
-    response_lines.append("This summary follows the page from the top so you see the first important items before the later sections.")
+    response_lines.append("Why It Matters To You:")
+    response_lines.append(f"This summary follows the page from the top so you see the first important items before the later sections, which makes it easier for a {personality.lower()} to decide what to explore next.")
     return "\n".join(response_lines)
 
 
@@ -922,13 +953,17 @@ def response_agent(message, profile, personality, decision, section, mode, simpl
 
     primary_input = prepare_summary_source_text(source_text) if mode == "summarize" and source_text.strip() else message
 
+    missing_areas = "; ".join(get_missing_areas(profile))
+
     prompt = f"""You are an AI Concierge for the Economic Times ecosystem.
 
 User Profile:
 * Type: {profile['user_type']}
 * Goal: {profile['goal']}
 * Risk: {profile['risk']}
+* Experience: {get_experience_level(profile)}
 * Personality: {personality}
+* Missing Areas: {missing_areas}
 * Section: {section}
 * Mode: {mode}
 * Language: {language.title()}
@@ -948,9 +983,14 @@ Instructions:
    * summarize -> summarize the pasted article/page content
 2. Always:
    * be accurate, relevant, and tailored to the user's request
+   * if you are not sure about a fact, say what is uncertain instead of inventing an answer
+   * do not make up live prices, dates, returns, headlines, or company-specific facts
+   * behave like a financial concierge, not just a tool
+   * guide the user toward the next best action so they never wonder what to do next
    * treat recent conversation as active context for follow-up questions unless the user clearly changes topic
    * keep the answer specific if the user names a stock, company, concept, or news topic
    * explain reasoning in plain language when useful
+   * keep the writing clean, well-structured, and free of filler
    * respond fully in {language.title()}
    * if a stock or company topic is mentioned, stay specific to that stock instead of answering generically
    * if mode is summarize, ignore dashboard bias and summarize whatever appears in the pasted content, including mixed news, stocks, search results, and companies
@@ -975,16 +1015,16 @@ Output rules:
 - In chat mode:
   Start with the direct answer to the user's exact request.
   If the user asks for explanation, give it.
-  If recommendations help, include 2 or 3 concise next steps.
+  Include a short 'What should you do next?' style finish with 2 or 3 concise next steps.
   End with a short helpful closing line.
 - In research mode:
-  Use clear headings, key points, and a short summary.
+  Use clear headings, key points, insights, and a short conclusion.
 - In simplify mode:
   Adjust the depth based on simplify level.
 - In alerts or highlights mode:
   Return short, scannable items.
 - In summarize mode:
-  Keep the first overview short, then reveal key takeaways in source order.
+  Include Overview, Key Takeaways, Insights, and Why It Matters To You.
 
 Do not sound robotic. Do not repeat the profile unless it helps answer the request. Keep it simple, natural, and useful."""
 
@@ -997,6 +1037,7 @@ Do not sound robotic. Do not repeat the profile unless it helps answer the reque
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model=model_name,
+            temperature=0.2,
         )
         return chat_completion.choices[0].message.content, 'groq'
 
@@ -1008,6 +1049,7 @@ Do not sound robotic. Do not repeat the profile unless it helps answer the reque
                 chat_completion = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
                     model=refreshed_model,
+                    temperature=0.2,
                 )
                 return chat_completion.choices[0].message.content, 'groq'
             except Exception as retry_error:

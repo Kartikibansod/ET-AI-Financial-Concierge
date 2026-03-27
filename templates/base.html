@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ET AI Financial Concierge{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20260327a') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20260327h') }}">
     {% block extra_head %}{% endblock %}
 </head>
 <body {% block body_attrs %}{% endblock %} class="app-root {% block body_class %}{% endblock %}">
@@ -22,7 +22,7 @@
         window.SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="{{ url_for('static', filename='auth.js', v='20260327e') }}"></script>
+    <script src="{{ url_for('static', filename='auth.js', v='20260327h') }}"></script>
     {% block page_scripts %}{% endblock %}
 </body>
 </html>

@@ -7,16 +7,6 @@
     tailwind.config = {
         theme: {
             extend: {
-                colors: {
-                    ink: "#0F172A",
-                    panel: "#1E293B",
-                    accent: "#6366F1",
-                    success: "#22C55E"
-                },
-                boxShadow: {
-                    glow: "0 30px 80px rgba(15, 23, 42, 0.45)",
-                    soft: "0 24px 60px rgba(15, 23, 42, 0.22)"
-                },
                 animation: {
                     drift: "drift 18s ease-in-out infinite"
                 },
@@ -30,58 +20,158 @@
         }
     };
 </script>
+<style>
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes floatSlow {
+        0%, 100% {
+            transform: translate3d(0, 0, 0);
+        }
+        50% {
+            transform: translate3d(0, -10px, 0);
+        }
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% {
+            opacity: 0.7;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.06);
+        }
+    }
+
+    .login-fade-up {
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    .login-delay-1 {
+        animation-delay: 0.08s;
+        opacity: 0;
+    }
+
+    .login-delay-2 {
+        animation-delay: 0.16s;
+        opacity: 0;
+    }
+
+    .login-delay-3 {
+        animation-delay: 0.24s;
+        opacity: 0;
+    }
+
+    .login-delay-4 {
+        animation-delay: 0.32s;
+        opacity: 0;
+    }
+
+    .hero-float {
+        animation: floatSlow 7s ease-in-out infinite;
+    }
+
+    .hero-glow {
+        animation: pulseGlow 7s ease-in-out infinite;
+    }
+</style>
 {% endblock %}
 {% block body_attrs %}data-page="auth" data-auth-mode="login" data-auth-guard="guest"{% endblock %}
-{% block body_class %}auth-pending min-h-screen bg-[#0B1120] text-slate-100{% endblock %}
+{% block body_class %}auth-pending min-h-screen text-slate-900{% endblock %}
 
 {% block content %}
 <main class="relative min-h-screen overflow-hidden">
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.24),_transparent_28%),radial-gradient(circle_at_80%_20%,_rgba(139,92,246,0.16),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.10),_transparent_22%),linear-gradient(135deg,_#030712_0%,_#0B1120_45%,_#111827_100%)]"></div>
-    <div class="absolute -left-24 top-16 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl animate-drift"></div>
-    <div class="absolute right-[18%] top-24 h-56 w-56 rounded-full bg-violet-500/20 blur-3xl animate-drift [animation-delay:2s]"></div>
-    <div class="absolute left-1/3 top-1/2 h-96 w-96 rounded-full bg-indigo-400/10 blur-3xl animate-drift [animation-delay:3s]"></div>
-    <div class="absolute bottom-12 right-0 h-80 w-80 rounded-full bg-violet-400/15 blur-3xl animate-drift [animation-delay:6s]"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(111,118,82,0.14),_transparent_28%),radial-gradient(circle_at_82%_18%,_rgba(178,138,59,0.14),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(143,159,121,0.12),_transparent_24%),linear-gradient(135deg,_#f7f1e7_0%,_#efe4d1_48%,_#f5efe3_100%)]"></div>
+    <div class="absolute -left-24 top-16 h-72 w-72 rounded-full bg-lime-800/10 blur-3xl animate-drift"></div>
+    <div class="absolute right-[18%] top-24 h-56 w-56 rounded-full bg-amber-300/25 blur-3xl animate-drift [animation-delay:2s]"></div>
+    <div class="absolute left-1/3 top-1/2 h-96 w-96 rounded-full bg-stone-300/25 blur-3xl animate-drift [animation-delay:3s]"></div>
+    <div class="absolute bottom-12 right-0 h-80 w-80 rounded-full bg-orange-200/20 blur-3xl animate-drift [animation-delay:6s]"></div>
 
     <div class="relative z-10 grid min-h-screen lg:grid-cols-[1.08fr_0.92fr]">
         <section class="flex items-center px-6 py-16 sm:px-10 lg:px-16 xl:px-24">
             <div class="mx-auto w-full max-w-2xl">
-                <div class="mb-8 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur">
-                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-semibold text-indigo-200">ET</span>
-                    <span class="text-sm font-medium tracking-wide text-slate-200">ET AI Financial Concierge</span>
+                <div class="login-fade-up mb-8 inline-flex items-center gap-3 rounded-full border border-stone-300/80 bg-white/75 px-4 py-2 text-stone-700 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-stone-700 to-amber-700 text-sm font-semibold text-white">ET</span>
+                    <span class="text-sm font-medium tracking-wide text-slate-700">ET AI Financial Concierge</span>
                 </div>
 
-                <div class="space-y-6">
-                    <p class="text-sm font-semibold uppercase tracking-[0.28em] text-indigo-300/90">AI Finance Platform</p>
-                    <h1 class="max-w-xl text-4xl font-bold leading-tight text-white sm:text-5xl xl:text-6xl">
-                        ET AI Financial Concierge
+                <div class="relative space-y-6">
+                    <div class="hero-glow absolute -left-12 top-8 h-36 w-36 rounded-full bg-amber-200/50 blur-3xl"></div>
+                    <div class="hero-glow absolute left-44 top-0 h-28 w-28 rounded-full bg-lime-200/40 blur-3xl [animation-delay:1.5s]"></div>
+                    <p class="login-fade-up login-delay-1 text-sm font-semibold uppercase tracking-[0.28em] text-amber-700/90">Refined ET workspace</p>
+                    <h1 class="login-fade-up login-delay-2 relative max-w-xl text-4xl font-bold leading-tight text-slate-900 sm:text-5xl xl:text-6xl">
+                        ET <span class="bg-gradient-to-r from-lime-700 via-stone-700 to-amber-700 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(178,138,59,0.16)]">AI</span> Financial Concierge
                     </h1>
-                    <p class="max-w-lg text-lg font-semibold text-slate-200 sm:text-xl">
+                    <p class="login-fade-up login-delay-3 max-w-lg text-lg font-semibold text-slate-700 sm:text-xl">
                         Your Smart Financial Guide powered by AI
                     </p>
-                    <p class="max-w-lg text-base leading-7 text-slate-300 sm:text-lg">
+                    <p class="login-fade-up login-delay-4 max-w-lg text-base leading-7 text-slate-600 sm:text-lg">
                         Get personalized investment insights, simplified Economic Times content, and AI-powered financial guidance - all in one place.
                     </p>
                 </div>
 
-                <div class="mt-8 flex flex-wrap gap-3">
-                    <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 backdrop-blur">Personalized Recommendations</span>
-                    <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 backdrop-blur">AI-Powered Insights</span>
-                    <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 backdrop-blur">Simplified Learning</span>
-                    <span class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-100 backdrop-blur">Smart Alerts</span>
+                <div class="login-fade-up login-delay-4 mt-8 flex flex-wrap gap-4">
+                    <span class="inline-flex items-center gap-2 rounded-full border border-stone-300 bg-white/85 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-md">○ Personalized Recommendations</span>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/85 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-md">◇ AI-Powered Insights</span>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-lime-200 bg-white/85 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-md">△ Simplified Learning</span>
+                    <span class="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/85 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-md">✦ Smart Alerts</span>
+                </div>
+
+                <div class="login-fade-up login-delay-4 relative mt-10 grid max-w-2xl gap-4 sm:grid-cols-[1.15fr_0.85fr]">
+                    <div class="relative overflow-hidden rounded-[28px] border border-white/70 bg-white/72 p-5 shadow-[0_16px_40px_rgba(84,62,34,0.08)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(84,62,34,0.12)]">
+                        <div class="absolute -right-10 top-2 h-28 w-28 rounded-full bg-amber-200/35 blur-2xl"></div>
+                        <div class="mb-3 flex items-center justify-between">
+                            <span class="rounded-full border border-lime-200 bg-lime-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-lime-800">Market pulse</span>
+                            <span class="text-xs font-semibold text-stone-500">Live</span>
+                        </div>
+                        <div class="mb-4 flex h-24 items-end gap-2">
+                            <span class="hero-float w-7 rounded-full bg-gradient-to-t from-stone-700 to-amber-500" style="height:42%"></span>
+                            <span class="hero-float w-7 rounded-full bg-gradient-to-t from-stone-700 to-amber-500 [animation-delay:0.4s]" style="height:60%"></span>
+                            <span class="hero-float w-7 rounded-full bg-gradient-to-t from-lime-700 to-lime-400 [animation-delay:0.8s]" style="height:52%"></span>
+                            <span class="hero-float w-7 rounded-full bg-gradient-to-t from-stone-700 to-amber-500 [animation-delay:1.2s]" style="height:76%"></span>
+                            <span class="hero-float w-7 rounded-full bg-gradient-to-t from-lime-700 to-lime-400 [animation-delay:1.6s]" style="height:68%"></span>
+                            <span class="hero-float w-7 rounded-full bg-gradient-to-t from-stone-700 to-amber-500 [animation-delay:2s]" style="height:88%"></span>
+                        </div>
+                        <p class="text-sm font-medium leading-6 text-stone-600">Built to make financial guidance feel clearer, sharper, and easier to act on.</p>
+                    </div>
+
+                    <div class="grid gap-3">
+                        <div class="hero-float rounded-[22px] border border-stone-200 bg-white/88 p-4 shadow-[0_10px_28px_rgba(84,62,34,0.08)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(84,62,34,0.12)]">
+                            <div class="mb-1 text-sm font-semibold text-slate-800">Market Insights</div>
+                            <div class="text-sm text-stone-600">Spot the signals worth watching first.</div>
+                        </div>
+                        <div class="hero-float rounded-[22px] border border-amber-200 bg-white/88 p-4 shadow-[0_10px_28px_rgba(84,62,34,0.08)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(84,62,34,0.12)] [animation-delay:1.4s]">
+                            <div class="mb-1 text-sm font-semibold text-slate-800">Smart Recommendations</div>
+                            <div class="text-sm text-stone-600">Get guided next steps shaped around you.</div>
+                        </div>
+                        <div class="hero-float rounded-[22px] border border-lime-200 bg-white/88 p-4 shadow-[0_10px_28px_rgba(84,62,34,0.08)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(84,62,34,0.12)] [animation-delay:2.2s]">
+                            <div class="mb-1 text-sm font-semibold text-slate-800">Portfolio Growth</div>
+                            <div class="text-sm text-stone-600">Track progress with calmer, clearer context.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section class="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-12 xl:px-16">
-            <div class="w-full max-w-md rounded-[28px] border border-white/10 bg-white/10 p-3 shadow-glow backdrop-blur-2xl">
-                <div class="rounded-[22px] bg-white/95 p-7 text-slate-900 shadow-soft sm:p-8">
+            <div class="w-full max-w-md rounded-[28px] border border-white/60 bg-white/45 p-3 shadow-[0_24px_70px_rgba(111,118,82,0.12)] backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(111,118,82,0.16)]">
+                <div class="rounded-[22px] bg-white/92 p-7 text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.05)] sm:p-8">
                     <div class="mb-6">
-                        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-indigo-600">Welcome Back</p>
-                        <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-900">Get Started</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">Continue with Google or use your email to access your ET AI Concierge workspace.</p>
+                        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-700">Welcome Back</p>
+                        <h2 class="mt-3 text-3xl font-bold tracking-tight text-slate-900">Enter Dashboard</h2>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">Continue with Google or use your email to jump back into your smart financial workspace.</p>
                     </div>
 
-                    <button class="group flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold text-slate-700 transition duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg" id="google-login-button" type="button">
+                    <button class="group flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-amber-200 hover:shadow-lg" id="google-login-button" type="button">
                         <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.9-5.5 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 4 1.5l2.7-2.6C17 3.3 14.8 2.3 12 2.3A9.7 9.7 0 0 0 2.3 12 9.7 9.7 0 0 0 12 21.7c5.6 0 9.3-3.9 9.3-9.4 0-.6-.1-1.1-.2-1.6H12Z"/></svg>
                         <span>Continue with Google</span>
                     </button>
@@ -95,32 +185,32 @@
                     <form id="login-form" class="space-y-4">
                         <label class="block">
                             <span class="mb-2 block text-sm font-medium text-slate-600">Email</span>
-                            <input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition duration-300 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10" type="email" id="login-email" required placeholder="you@example.com">
+                            <input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition duration-300 placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100" type="email" id="login-email" required placeholder="you@example.com">
                         </label>
                         <label class="block">
                             <span class="mb-2 block text-sm font-medium text-slate-600">Password</span>
                             <div class="relative">
-                                <input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-14 text-sm text-slate-900 outline-none transition duration-300 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10" type="password" id="login-password" required placeholder="Enter your password">
+                                <input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-14 text-sm text-slate-900 outline-none transition duration-300 placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100" type="password" id="login-password" required placeholder="Enter your password">
                                 <button class="absolute inset-y-0 right-3 inline-flex items-center text-sm font-semibold text-slate-400 transition hover:text-slate-600" type="button" id="toggle-password" aria-label="Show password">
                                     <svg id="eye-open" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z"/><circle cx="12" cy="12" r="3"></circle></svg>
                                     <svg id="eye-closed" class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3 3 18 18M10.584 10.587A2 2 0 0 0 13.414 13.4M9.88 5.09A10.94 10.94 0 0 1 12 4.9c4.777 0 8.813 2.995 10 7.1a11.61 11.61 0 0 1-4.042 5.581M6.228 6.23A11.563 11.563 0 0 0 2 12c1.187 4.105 5.223 7.1 10 7.1 1.713 0 3.34-.385 4.79-1.075"/></svg>
                                 </button>
                             </div>
                         </label>
-                        <button class="w-full rounded-2xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.35)]" type="submit">Enter Dashboard</button>
+                        <button class="w-full cursor-pointer rounded-2xl bg-gradient-to-r from-stone-700 via-lime-700 to-amber-700 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-stone-500/20 transition duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_22px_50px_rgba(111,118,82,0.3)]" type="submit">Enter Dashboard</button>
                         <div class="hidden rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700" id="auth-message"></div>
                     </form>
 
                     <form id="recovery-form" class="hidden space-y-4">
-                        <label class="block"><span class="mb-2 block text-sm font-medium text-slate-600">New Password</span><input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10" type="password" id="recovery-password" placeholder="Create a new password"></label>
-                        <label class="block"><span class="mb-2 block text-sm font-medium text-slate-600">Confirm New Password</span><input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10" type="password" id="recovery-confirm-password" placeholder="Confirm the new password"></label>
-                        <button class="w-full rounded-2xl bg-gradient-to-r from-indigo-500 to-violet-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(99,102,241,0.35)]" type="submit">Update Password</button>
+                        <label class="block"><span class="mb-2 block text-sm font-medium text-slate-600">New Password</span><input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100" type="password" id="recovery-password" placeholder="Create a new password"></label>
+                        <label class="block"><span class="mb-2 block text-sm font-medium text-slate-600">Confirm New Password</span><input class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100" type="password" id="recovery-confirm-password" placeholder="Confirm the new password"></label>
+                        <button class="w-full cursor-pointer rounded-2xl bg-gradient-to-r from-stone-700 via-lime-700 to-amber-700 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-stone-500/20 transition duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-[0_22px_50px_rgba(111,118,82,0.3)]" type="submit">Update Password</button>
                         <div class="hidden rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700" id="recovery-message"></div>
                     </form>
 
                     <div class="mt-6 flex items-center justify-between gap-4 text-sm">
-                        <a class="font-semibold text-slate-500 transition hover:text-indigo-600" href="/signup">Create an account</a>
-                        <a class="font-semibold text-slate-500 transition hover:text-indigo-600" href="/forgot-password">Forgot password?</a>
+                        <a class="font-semibold text-slate-500 transition hover:text-amber-700" href="/signup">Create an account</a>
+                        <a class="font-semibold text-slate-500 transition hover:text-amber-700" href="/forgot-password">Forgot password?</a>
                     </div>
                 </div>
             </div>

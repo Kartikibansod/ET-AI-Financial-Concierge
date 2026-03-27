@@ -25,6 +25,7 @@ const defaultSettings = {
     language: "english"
 };
 
+
 function detectPersonality(profile) {
     const risk = (profile.risk || "").toLowerCase();
     if (risk === "low") {
@@ -121,6 +122,406 @@ function getPreferredDisplayName(profile, settings) {
     return profileName || settings.display_name || "ET User";
 }
 
+function getExperienceLevel(profile) {
+    const explicitLevel = String(profile.level || "").trim();
+    if (explicitLevel) {
+        return explicitLevel;
+    }
+
+    const userType = String(profile.user_type || "").toLowerCase();
+    if (userType.includes("investor")) {
+        return "Intermediate";
+    }
+    if (userType.includes("working")) {
+        return "Beginner";
+    }
+    return "Beginner";
+}
+
+function getMissingAreas(profile) {
+    const missing = [];
+    const goal = String(profile.goal || "").toLowerCase();
+    const risk = String(profile.risk || "").toLowerCase();
+    const experience = getExperienceLevel(profile).toLowerCase();
+
+    if (!String(profile.income || "").trim() && (goal.includes("invest") || goal.includes("save"))) {
+        missing.push("No investing capacity mapped yet");
+    }
+    if (experience === "beginner") {
+        missing.push("Needs stronger basics");
+    }
+    if (!String(profile.risk || "").trim() || risk === "medium") {
+        missing.push("Risk preference can be refined");
+    }
+    if (!String(profile.interests || "").trim() && goal.includes("news")) {
+        missing.push("No topic focus selected yet");
+    }
+
+    if (!missing.length) {
+        missing.push("No active investment record shared yet");
+    }
+
+    return missing.slice(0, 2).join(" • ");
+}
+
+function getConciergeRecommendations(profile, activeSection) {
+    const goal = String(profile.goal || "").toLowerCase();
+    const experience = getExperienceLevel(profile);
+    const risk = String(profile.risk || "Medium");
+
+    const shared = [
+        {
+            title: "Explore ET Markets",
+            description: "Use live ET context before making any financial move.",
+            cta: "Explore",
+            message: "Show me ET Markets insights relevant to my profile"
+        }
+    ];
+
+    if (activeSection === "investment" || goal.includes("invest") || goal.includes("save")) {
+        return [
+            {
+                title: risk === "Low" ? "Start SIP with Rs1000/month (low risk)" : "Build your first investing plan this week",
+                description: "Begin with a guided action matched to your current risk comfort and experience.",
+                cta: "Start Now",
+                message: risk === "Low"
+                    ? "Guide me to start a low-risk SIP with Rs1000 per month"
+                    : "Help me build an investment plan from my current profile"
+            },
+            {
+                title: experience === "Beginner" ? "Learn SIP and mutual fund basics first" : "Compare safer fund and stock options",
+                description: "Strengthen your financial confidence before taking a bigger investment step.",
+                cta: "Learn",
+                message: experience === "Beginner"
+                    ? "Teach me the investing basics I should know first"
+                    : "Compare options I should review before investing more"
+            },
+            shared[0]
+        ];
+    }
+
+    if (activeSection === "news" || goal.includes("track") || goal.includes("news")) {
+        return [
+            {
+                title: "Track only 3 headlines that matter to your money",
+                description: "Focus on the business and market updates most tied to your goals.",
+                cta: "Start Now",
+                message: "Show me the financial headlines that matter most for my profile"
+            },
+            {
+                title: "Turn today's top story into a money decision signal",
+                description: "Understand why a headline matters before you spend time reading everything.",
+                cta: "Learn",
+                message: "Explain why today's most important news matters for me"
+            },
+            shared[0]
+        ];
+    }
+
+    return [
+        {
+            title: "Learn the first 3 concepts you should know before investing",
+            description: "Build a stronger foundation before you act on markets or products.",
+            cta: "Start Now",
+            message: "Teach me the basics I should understand before investing"
+        },
+        {
+            title: "Follow a guided learning path from basics to examples",
+            description: "Move from definition to example to next action without guessing what comes next.",
+            cta: "Learn",
+            message: "Create a step-by-step financial learning path for me"
+        },
+        shared[0]
+    ];
+}
+
+function getTodayActions(profile, activeSection) {
+    const risk = String(profile.risk || "Medium");
+    const experience = getExperienceLevel(profile);
+
+    if (activeSection === "investment") {
+        return [
+            {
+                title: risk === "Low" ? "Start SIP with Rs1000/month" : "Draft your first investing split",
+                description: risk === "Low" ? "A low-risk first move that builds consistency." : "Decide how much should go to SIPs, cash, and watchlist ideas.",
+                cta: "Primary",
+                message: risk === "Low" ? "Help me start a SIP with Rs1000 per month" : "Help me draft my first investing split"
+            },
+            {
+                title: "Review your risk comfort",
+                description: "Tighten your risk profile before you go bigger.",
+                cta: "Secondary",
+                message: "Help me refine my investment risk comfort"
+            },
+            {
+                title: "Check ET Markets before acting",
+                description: "Use current context before making a move.",
+                cta: "Secondary",
+                message: "Show me ET Markets signals I should review today"
+            }
+        ];
+    }
+
+    if (activeSection === "news") {
+        return [
+            {
+                title: "Read the 3 headlines that matter most",
+                description: "Skip the noise and focus on what could affect your money.",
+                cta: "Primary",
+                message: "Show me the top 3 headlines that matter most to my profile today"
+            },
+            {
+                title: "Simplify one complex market update",
+                description: "Understand the biggest update before you move on.",
+                cta: "Secondary",
+                message: "Simplify the biggest market update I should understand today"
+            },
+            {
+                title: "Track one topic for the week",
+                description: "Pick a theme like RBI, inflation, or markets and stay consistent.",
+                cta: "Secondary",
+                message: "Recommend one financial news topic I should track this week"
+            }
+        ];
+    }
+
+    return [
+        {
+            title: experience === "Beginner" ? "Start with SIP, inflation, and mutual funds" : "Refresh core concepts before you level up",
+            description: "Build a stronger base before jumping to advanced topics.",
+            cta: "Primary",
+            message: "Create my first learning session for SIP, inflation, and mutual funds"
+        },
+        {
+            title: "Complete one step-by-step explanation",
+            description: "Use simplify mode to make one hard topic easy today.",
+            cta: "Secondary",
+            message: "Explain one important finance topic step by step for me today"
+        },
+        {
+            title: "Pick your next ET learning path",
+            description: "Move from basics to examples without guessing.",
+            cta: "Secondary",
+            message: "Recommend my next ET learning path based on my profile"
+        }
+    ];
+}
+
+function getAssistantSuggestions(profile, activeSection) {
+    if (activeSection === "investment") {
+        return [
+            "Start SIP with Rs1000/month",
+            "Compare low-risk mutual funds",
+            "Show me today's ET Markets view"
+        ];
+    }
+    if (activeSection === "news") {
+        return [
+            "What headline matters most today?",
+            "Explain the RBI update simply",
+            "Track one market theme for me"
+        ];
+    }
+    return [
+        "Teach me investing basics",
+        "Create my learning path",
+        "Explain one concept step by step"
+    ];
+}
+
+function getProgressItems(profile, activeSection, history = []) {
+    const historyLength = Array.isArray(history) ? history.length : 0;
+    const hasGoal = Boolean(String(profile.goal || "").trim());
+    const profileCompleted = Boolean(profile.profile_completed || (String(profile.first_name || "").trim() && String(profile.user_type || "").trim()));
+    const learningStarted = historyLength > 0 || activeSection === "learning";
+    const firstInvestment = /invest|sip|fund|stock|save/i.test(String(profile.goal || "")) || history.some(item => /invest|sip|fund|stock/i.test(String(item.content || "")));
+
+    return [
+        {
+            label: "Profile completed",
+            status: profileCompleted,
+            detail: profileCompleted ? "Your concierge has enough to personalize guidance." : "Finish setup so the AI can guide you better."
+        },
+        {
+            label: "Learning started",
+            status: learningStarted || hasGoal,
+            detail: learningStarted || hasGoal ? "You have already started building context." : "Start one guided explanation to build momentum."
+        },
+        {
+            label: "First investment",
+            status: firstInvestment,
+            detail: firstInvestment ? "You are already moving toward action." : "Your first investment step is still waiting."
+        }
+    ];
+}
+
+function populateProfileSummary(profile, personality, root = document) {
+    const riskNode = root.querySelector("#profile-risk-level");
+    const experienceNode = root.querySelector("#profile-experience-level");
+    const goalsNode = root.querySelector("#profile-goals");
+    const missingNode = root.querySelector("#profile-missing-areas");
+    const titleNode = root.querySelector("#profile-summary-title");
+    const badgeNode = root.querySelector("#profile-personality-badge");
+
+    if (titleNode) {
+        titleNode.textContent = `You are a ${getExperienceLevel(profile).toLowerCase()} ${String(profile.user_type || "user").toLowerCase()} with ${String(profile.risk || "medium").toLowerCase()} risk appetite.`;
+    }
+    if (badgeNode) {
+        badgeNode.textContent = personality;
+    }
+    if (riskNode) {
+        riskNode.textContent = profile.risk || "Medium";
+    }
+    if (experienceNode) {
+        experienceNode.textContent = getExperienceLevel(profile);
+    }
+    if (goalsNode) {
+        goalsNode.textContent = profile.goal || "Learn about finance";
+    }
+    if (missingNode) {
+        missingNode.textContent = getMissingAreas(profile);
+    }
+}
+
+function renderConciergeRecommendations(container, recommendations = []) {
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+    recommendations.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "concierge-recommendation-card";
+
+        const title = document.createElement("div");
+        title.className = "concierge-recommendation-title";
+        title.textContent = item.title;
+        card.appendChild(title);
+
+        const description = document.createElement("div");
+        description.className = "concierge-recommendation-description";
+        description.textContent = item.description;
+        card.appendChild(description);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `concierge-recommendation-cta ${item.cta === "Start Now" ? "primary-btn" : "secondary-btn"}`;
+        button.textContent = item.cta;
+        button.addEventListener("click", () => {
+            const input = document.getElementById("message-input");
+            const sendButton = document.getElementById("send-button");
+            if (input && sendButton) {
+                input.value = item.message;
+                sendButton.click();
+                return;
+            }
+            window.location.href = item.title.toLowerCase().includes("market")
+                ? "/news"
+                : item.title.toLowerCase().includes("learn")
+                    ? "/learning"
+                    : "/investment";
+        });
+        card.appendChild(button);
+
+        container.appendChild(card);
+    });
+}
+
+function renderTodayActions(container, actions = []) {
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+    actions.slice(0, 2).forEach((item, index) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = `today-action-card ${index === 0 ? "today-action-card-primary" : ""}`;
+
+        const title = document.createElement("div");
+        title.className = "today-action-title";
+        title.textContent = item.title;
+        card.appendChild(title);
+
+        const description = document.createElement("div");
+        description.className = "today-action-description";
+        description.textContent = item.description;
+        card.appendChild(description);
+
+        const cta = document.createElement("span");
+        cta.className = `today-action-chip ${index === 0 ? "today-action-chip-primary" : ""}`;
+        cta.textContent = index === 0 ? "Primary CTA" : "Next Step";
+        card.appendChild(cta);
+
+        card.addEventListener("click", () => {
+            const input = document.getElementById("message-input");
+            const sendButton = document.getElementById("send-button");
+            if (input && sendButton) {
+                input.value = item.message;
+                sendButton.click();
+            }
+        });
+
+        container.appendChild(card);
+    });
+}
+
+function renderAssistantPanel(listNode, suggestions = []) {
+    if (!listNode) {
+        return;
+    }
+
+    listNode.innerHTML = "";
+    suggestions.slice(0, 2).forEach(prompt => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "assistant-suggestion-btn";
+        button.textContent = prompt;
+        button.addEventListener("click", () => {
+            const input = document.getElementById("message-input");
+            const sendButton = document.getElementById("send-button");
+            if (input && sendButton) {
+                input.value = prompt;
+                sendButton.click();
+            }
+        });
+        listNode.appendChild(button);
+    });
+}
+
+function renderProgressTracker(container, items = []) {
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+    items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = `progress-check-item ${item.status ? "is-complete" : ""}`;
+
+        const marker = document.createElement("div");
+        marker.className = "progress-check-marker";
+        marker.textContent = item.status ? "Done" : "Next";
+        row.appendChild(marker);
+
+        const body = document.createElement("div");
+        body.className = "progress-check-body";
+
+        const label = document.createElement("div");
+        label.className = "progress-check-label";
+        label.textContent = item.label;
+        body.appendChild(label);
+
+        const detail = document.createElement("div");
+        detail.className = "progress-check-detail";
+        detail.textContent = item.detail;
+        body.appendChild(detail);
+
+        row.appendChild(body);
+        container.appendChild(row);
+    });
+}
+
 function initHomePage() {
     const flow = document.getElementById("questionnaire-flow");
     const progressRow = document.getElementById("questionnaire-progress");
@@ -131,6 +532,10 @@ function initHomePage() {
     const investmentCopy = document.getElementById("dashboard-copy-investment");
     const newsCopy = document.getElementById("dashboard-copy-news");
     const learningCopy = document.getElementById("dashboard-copy-learning");
+    const profileSummaryCard = document.getElementById("profile-summary-card");
+    const homeRecommendations = document.getElementById("home-recommendations");
+    const homeRecommendationGrid = document.getElementById("home-recommendation-grid");
+    const homeRecommendationTitle = document.getElementById("home-recommendation-title");
     const savedProfile = loadProfile();
     const state = { ...defaultProfile, ...savedProfile };
 
@@ -142,14 +547,14 @@ function initHomePage() {
         },
         {
             id: "user_type",
-            title: "Which of these best describes you?",
+            title: "Are you a student, working professional, or already investing?",
             type: "options",
             options: ["Student", "Working Professional", "Investor", "Other"],
             otherPlaceholder: "Tell us how you would describe yourself"
         },
         {
             id: "goal",
-            title: "What do you want to do right now?",
+            title: "What is your main goal right now?",
             type: "options",
             options: ["Learn about finance", "Start investing", "Save money", "Track market trends", "Other"],
             otherPlaceholder: "Tell us what you want to do"
@@ -173,7 +578,7 @@ function initHomePage() {
             return [
                 {
                     id: "risk",
-                    title: "Which of these sounds most like you?",
+                    title: "Do you already invest, and how much risk feels comfortable?",
                     type: "options",
                     options: [
                         { label: "I prefer safe and stable options", value: "Low" },
@@ -199,7 +604,7 @@ function initHomePage() {
             return [
                 {
                     id: "interests",
-                    title: "What topics are you interested in?",
+                    title: "Which financial topics should your concierge watch for you?",
                     type: "options",
                     options: ["Stock Market", "Business & Economy", "Startups", "Personal Finance", "Other"],
                     otherPlaceholder: "Tell us the topic you want to follow"
@@ -209,7 +614,7 @@ function initHomePage() {
         return [
             {
                 id: "level",
-                title: "What is your current level?",
+                title: "How confident do you already feel with finance basics?",
                 type: "options",
                 options: ["Beginner", "Intermediate", "Advanced"]
             }
@@ -252,9 +657,17 @@ function initHomePage() {
 
     function showDashboardOptions() {
         const recommended = getDestinationTitle(state);
+        const personality = detectPersonality(state);
         flow.innerHTML = "";
         progressRow.classList.add("hidden");
         destinationCard.classList.remove("hidden");
+        profileSummaryCard?.classList.remove("hidden");
+        homeRecommendations?.classList.remove("hidden");
+        populateProfileSummary(state, personality);
+        if (homeRecommendationTitle) {
+            homeRecommendationTitle.textContent = `Recommended for ${getProfileDisplayName(state) || "you"}`;
+        }
+        renderConciergeRecommendations(homeRecommendationGrid, getConciergeRecommendations(state, goalType(state)));
         investmentCopy.textContent = recommended === "Investment"
             ? "Recommended for you right now, but always open whenever you want it."
             : "Explore investing ideas, SIPs, funds, and market opportunities.";
@@ -332,7 +745,7 @@ function initHomePage() {
 
         const copy = document.createElement("p");
         copy.className = "question-copy";
-        copy.textContent = "Takes less than 60 seconds. Your AI will use this to personalize the experience.";
+        copy.textContent = "Hi, I'm your ET AI Concierge. Let me understand you in 60 seconds so I can guide your next financial step.";
         card.appendChild(copy);
 
         const grid = document.createElement("div");
@@ -895,46 +1308,72 @@ function renderActionButtons(container, actions) {
         return;
     }
 
-    const sectionNode = document.createElement("div");
-    sectionNode.className = "action-section";
+    const nextActions = actions.slice(0, 3);
+    const ecosystemActions = actions.slice(3, 6);
 
-    const title = document.createElement("div");
-    title.className = "action-section-title";
-    title.textContent = "Continue with ET";
-    sectionNode.appendChild(title);
-
-    const grid = document.createElement("div");
-    grid.className = "action-grid";
-
-    actions.forEach(action => {
-        const link = document.createElement("a");
-        link.className = "action-link-card";
-        link.href = action.url;
-        link.target = "_blank";
-        link.rel = "noreferrer";
-
-        const label = document.createElement("div");
-        label.className = "action-link-label";
-        label.textContent = action.label;
-        link.appendChild(label);
-
-        if (action.headline) {
-            const headline = document.createElement("div");
-            headline.className = "action-link-headline";
-            headline.textContent = action.headline;
-            link.appendChild(headline);
+    function buildActionSection(titleText, subtitleText, items) {
+        if (!items.length) {
+            return null;
         }
 
-        const description = document.createElement("div");
-        description.className = "action-link-description";
-        description.textContent = action.description;
-        link.appendChild(description);
+        const sectionNode = document.createElement("div");
+        sectionNode.className = "action-section";
 
-        grid.appendChild(link);
-    });
+        const title = document.createElement("div");
+        title.className = "action-section-title";
+        title.textContent = titleText;
+        sectionNode.appendChild(title);
 
-    sectionNode.appendChild(grid);
-    container.appendChild(sectionNode);
+        if (subtitleText) {
+            const subtitle = document.createElement("div");
+            subtitle.className = "action-link-description";
+            subtitle.textContent = subtitleText;
+            sectionNode.appendChild(subtitle);
+        }
+
+        const grid = document.createElement("div");
+        grid.className = "action-grid";
+
+        items.forEach(action => {
+            const link = document.createElement("a");
+            link.className = "action-link-card";
+            link.href = action.url;
+            link.target = "_blank";
+            link.rel = "noreferrer";
+
+            const label = document.createElement("div");
+            label.className = "action-link-label";
+            label.textContent = action.label;
+            link.appendChild(label);
+
+            if (action.headline) {
+                const headline = document.createElement("div");
+                headline.className = "action-link-headline";
+                headline.textContent = action.headline;
+                link.appendChild(headline);
+            }
+
+            const description = document.createElement("div");
+            description.className = "action-link-description";
+            description.textContent = action.description;
+            link.appendChild(description);
+
+            grid.appendChild(link);
+        });
+
+        sectionNode.appendChild(grid);
+        return sectionNode;
+    }
+
+    const nextSection = buildActionSection("What should you do next?", "Your concierge recommends these immediate next steps.", nextActions);
+    const ecosystemSection = buildActionSection("ET Ecosystem Recommendations", "Based on your profile and topic, you may also like:", ecosystemActions);
+
+    if (nextSection) {
+        container.appendChild(nextSection);
+    }
+    if (ecosystemSection) {
+        container.appendChild(ecosystemSection);
+    }
 }
 
 function initDashboardPage() {
@@ -959,6 +1398,15 @@ function initDashboardPage() {
     const quickActions = document.querySelector(".quick-actions");
     const quickActionButtons = Array.from(document.querySelectorAll("[data-quick-message]"));
     const sectionShortcuts = document.getElementById("section-shortcuts");
+    const conciergeRecommendationTitle = document.getElementById("concierge-recommendation-title");
+    const conciergeRecommendationCopy = document.getElementById("concierge-recommendation-copy");
+    const conciergeRecommendationGrid = document.getElementById("concierge-recommendation-grid");
+    const todayActionsTitle = document.getElementById("today-actions-title");
+    const todayActionsGrid = document.getElementById("today-actions-grid");
+    const assistantPanelTitle = document.getElementById("assistant-panel-title");
+    const assistantPanelCopy = document.getElementById("assistant-panel-copy");
+    const assistantSuggestionList = document.getElementById("assistant-suggestion-list");
+    const progressChecklist = document.getElementById("progress-checklist");
     const historyList = document.getElementById("history-list");
     const historyPanelCopy = document.getElementById("history-panel-copy");
     const inputContainer = document.querySelector(".input-container");
@@ -972,6 +1420,7 @@ function initDashboardPage() {
     const settingsLanguage = document.getElementById("settings-language");
     const saveSettingsButton = document.getElementById("save-settings-button");
     const resetProfileButton = document.getElementById("reset-profile-button");
+    const logoutButton = document.getElementById("logout-button");
     const sectionGreeting = document.getElementById("section-greeting");
     const profile = loadProfile();
     const userSettings = loadSettings();
@@ -999,17 +1448,50 @@ function initDashboardPage() {
     simplifyLevelSelect.value = userSettings.default_simplify_level || "basic";
     settingsLanguage.value = userSettings.language || "english";
     languageSelect.value = userSettings.language || "english";
+    const firstName = profile.first_name || preferredDisplayName.split(" ")[0] || "there";
     if (sectionGreeting) {
-        const firstName = profile.first_name || preferredDisplayName.split(" ")[0] || "there";
-        sectionGreeting.textContent = `Hi ${firstName} 👋`;
+        sectionGreeting.textContent = `Hi ${firstName}. Here's what matters for you today`;
     }
     const riskIndicator = document.getElementById("risk-indicator-card");
     if (riskIndicator) {
         riskIndicator.textContent = `${profile.risk || "Medium"} risk profile`;
     }
+    populateProfileSummary(profile, personality);
+    if (conciergeRecommendationTitle) {
+        conciergeRecommendationTitle.textContent = `Recommended for ${firstName || "you"}`;
+    }
+    if (conciergeRecommendationCopy) {
+        conciergeRecommendationCopy.textContent = section === "investment"
+            ? "Start with the guidance your concierge believes is most useful before you open tools."
+            : section === "news"
+                ? "Your concierge has already prioritized what to understand and explore next."
+                : "Your concierge is guiding the next learning moves instead of waiting for you to guess.";
+    }
+    renderConciergeRecommendations(conciergeRecommendationGrid, getConciergeRecommendations(profile, section));
+    if (todayActionsTitle) {
+        todayActionsTitle.textContent = section === "investment"
+            ? "These are the investing moves your concierge would start with today."
+            : section === "news"
+                ? "These are the news actions your concierge would prioritize today."
+                : "These are the learning actions your concierge would start with today.";
+    }
+    renderTodayActions(todayActionsGrid, getTodayActions(profile, section));
+    if (assistantPanelTitle) {
+        assistantPanelTitle.textContent = `Hi ${firstName}. I've analyzed your profile.`;
+    }
+    if (assistantPanelCopy) {
+        assistantPanelCopy.textContent = section === "investment"
+            ? "I can guide your next investing move without making you guess where to begin."
+            : section === "news"
+                ? "I can narrow the noise and tell you what is actually worth your attention."
+                : "I can guide the next thing you should learn so you keep making progress.";
+    }
+    renderAssistantPanel(assistantSuggestionList, getAssistantSuggestions(profile, section));
+    renderProgressTracker(progressChecklist, getProgressItems(profile, section, conversationHistory));
     if (downloadReportButton) {
         downloadReportButton.disabled = true;
     }
+
 
     function renderEmptyState(mode) {
         chatContainer.innerHTML = "";
@@ -1024,13 +1506,13 @@ function initDashboardPage() {
                 ? "Let your AI simplify it step by step"
                 : mode === "summarize"
                     ? "Paste an article URL or text to summarize"
-                    : "Start a conversation with your AI concierge";
+                    : "Ask me anything about markets, news, or learning.";
         shell.appendChild(title);
 
         const copy = document.createElement("div");
         copy.className = "empty-state-copy";
         copy.textContent = mode === "chat"
-            ? "Ask anything about investments, markets, finance news, or learning. Your assistant will adapt to this section."
+            ? "Try a prompt below or type your own question. I’ll keep it tailored to this section and your profile."
             : "Choose a prompt below or type your own request.";
         shell.appendChild(copy);
 
@@ -1685,7 +2167,7 @@ function initDashboardPage() {
         });
     });
 
-    document.querySelectorAll(".mode-btn").forEach(button => {
+    document.querySelectorAll("[data-mode]").forEach(button => {
         button.addEventListener("click", () => {
             updateModeUI(button.dataset.mode);
         });
@@ -1738,8 +2220,22 @@ function initDashboardPage() {
         window.location.reload();
     });
 
-    reportButton.addEventListener("click", renderReportPreview);
-    downloadReportButton.addEventListener("click", downloadReport);
+    logoutButton?.addEventListener("click", async () => {
+        try {
+            const client = typeof getSupabaseClient === "function" ? getSupabaseClient() : null;
+            if (client) {
+                await client.auth.signOut();
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            localStorage.removeItem(settingsKey);
+            window.location.replace("/login");
+        }
+    });
+
+    reportButton?.addEventListener("click", renderReportPreview);
+    downloadReportButton?.addEventListener("click", downloadReport);
     document.getElementById("summarize-button")?.addEventListener("click", triggerSummarize);
 
     updateModeUI(activeMode);
