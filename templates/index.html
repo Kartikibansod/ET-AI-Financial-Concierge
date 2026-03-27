@@ -10,17 +10,17 @@
     <section class="hero-card">
         <div class="hero-copy">
             <p class="eyebrow">ET AI Financial Concierge</p>
-            <h1>Hi, I'm your ET AI Concierge</h1>
-            <p class="hero-text">Let me understand you in 60 seconds so I can guide what you should learn, track, and explore next across the ET ecosystem.</p>
+            <h1>Your AI is ready to adapt to you</h1>
+            <p class="hero-text">Move across investing, news, and learning in one intelligent Economic Times workspace designed around your goals, context, and pace.</p>
         </div>
 
         <div class="questionnaire-card">
             <div class="questionnaire-head">
                 <div>
                     <h2>Your AI is getting to know you</h2>
-                    <p class="questionnaire-copy">This is a guided concierge setup, not a form. Answer a few quick questions and your AI will recommend what to do next.</p>
+                    <p class="questionnaire-copy">Takes less than 60 seconds and helps personalize your experience across Investment, News, and Learning.</p>
                 </div>
-                <button class="retake-btn" id="retake-questionnaire" type="button">Continue -> Personalize My Experience</button>
+                <button class="retake-btn" id="retake-questionnaire" type="button">Continue -> Personalize Experience</button>
             </div>
 
             <div class="progress-row" id="questionnaire-progress">
@@ -31,44 +31,6 @@
             </div>
 
             <div id="questionnaire-flow"></div>
-
-            <div class="profile-summary-card hidden" id="profile-summary-card">
-                <div class="profile-summary-head">
-                    <div>
-                        <p class="sidebar-title">Your Financial Profile</p>
-                        <h3 id="profile-summary-title">Profile snapshot</h3>
-                    </div>
-                    <div class="profile-summary-badge" id="profile-personality-badge">Beginner Saver</div>
-                </div>
-                <div class="profile-summary-grid">
-                    <div class="profile-summary-item">
-                        <span>Risk Level</span>
-                        <strong id="profile-risk-level">Medium</strong>
-                    </div>
-                    <div class="profile-summary-item">
-                        <span>Experience</span>
-                        <strong id="profile-experience-level">Beginner</strong>
-                    </div>
-                    <div class="profile-summary-item">
-                        <span>Goals</span>
-                        <strong id="profile-goals">Learn about finance</strong>
-                    </div>
-                    <div class="profile-summary-item">
-                        <span>Missing Areas</span>
-                        <strong id="profile-missing-areas">No investments yet</strong>
-                    </div>
-                </div>
-            </div>
-
-            <section class="concierge-recommendations hidden" id="home-recommendations">
-                <div class="concierge-header">
-                    <div>
-                        <p class="sidebar-title">Recommended for YOU</p>
-                        <h3 id="home-recommendation-title">Your AI is ready with next steps</h3>
-                    </div>
-                </div>
-                <div class="concierge-recommendation-grid" id="home-recommendation-grid"></div>
-            </section>
 
             <div class="navigation-grid hidden" id="recommended-destination">
                 <a class="nav-card" href="/investment" id="dashboard-link-investment" data-dashboard-link>
@@ -90,5 +52,5 @@
 {% endblock %}
 
 {% block page_scripts %}
-<script src="{{ url_for('static', filename='script.js', v='20260327h') }}"></script>
+<script src="{{ url_for('static', filename='script.js', v='20260327a') }}"></script>
 {% endblock %}
