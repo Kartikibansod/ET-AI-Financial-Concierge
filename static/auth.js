@@ -167,6 +167,45 @@ function hideAuthMessage() {
     messageNode.textContent = "";
 }
 
+function hasOAuthCallbackParams() {
+    const search = window.location.search || "";
+    const hash = window.location.hash || "";
+    const params = new URLSearchParams(search);
+    return (
+        params.has("code") ||
+        params.has("access_token") ||
+        params.has("refresh_token") ||
+        hash.includes("access_token") ||
+        hash.includes("refresh_token")
+    );
+}
+
+function wait(ms) {
+    return new Promise(resolve => {
+        window.setTimeout(resolve, ms);
+    });
+}
+
+async function resolveSession(client) {
+    const shouldWaitForOAuth = hasOAuthCallbackParams();
+    const maxAttempts = shouldWaitForOAuth ? 8 : 1;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        const { data } = await client.auth.getSession();
+        if (data.session?.user) {
+            return data.session;
+        }
+
+        if (!shouldWaitForOAuth) {
+            return null;
+        }
+
+        await wait(350);
+    }
+
+    return null;
+}
+
 async function applyAuthGuard(client) {
     if (!client) {
         if (authGuard === "protected") {
@@ -179,8 +218,7 @@ async function applyAuthGuard(client) {
 
     let session = null;
     try {
-        const { data } = await client.auth.getSession();
-        session = data.session;
+        session = await resolveSession(client);
     } catch (error) {
         if (authGuard === "protected") {
             document.body.classList.remove("auth-pending");
