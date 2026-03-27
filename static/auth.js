@@ -180,6 +180,11 @@ function hasOAuthCallbackParams() {
     );
 }
 
+function getOAuthCode() {
+    const params = new URLSearchParams(window.location.search || "");
+    return params.get("code") || "";
+}
+
 function wait(ms) {
     return new Promise(resolve => {
         window.setTimeout(resolve, ms);
@@ -206,6 +211,27 @@ async function resolveSession(client) {
     return null;
 }
 
+async function recoverOAuthSession(client) {
+    const code = getOAuthCode();
+    if (!code) {
+        return null;
+    }
+
+    try {
+        const { data, error } = await client.auth.exchangeCodeForSession(code);
+        if (error) {
+            throw error;
+        }
+
+        const cleanUrl = `${window.location.origin}${window.location.pathname}${window.location.hash || ""}`;
+        window.history.replaceState({}, document.title, cleanUrl);
+        return data.session || null;
+    } catch (error) {
+        console.error("OAuth session recovery failed", error);
+        return null;
+    }
+}
+
 async function applyAuthGuard(client) {
     if (!client) {
         if (authGuard === "protected") {
@@ -218,7 +244,10 @@ async function applyAuthGuard(client) {
 
     let session = null;
     try {
-        session = await resolveSession(client);
+        session = await recoverOAuthSession(client);
+        if (!session) {
+            session = await resolveSession(client);
+        }
     } catch (error) {
         if (authGuard === "protected") {
             document.body.classList.remove("auth-pending");
