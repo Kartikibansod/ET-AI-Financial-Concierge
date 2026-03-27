@@ -21,7 +21,13 @@ function getSupabaseClient() {
     if (!url || !anonKey || !window.supabase) {
         return null;
     }
-    return window.supabase.createClient(url, anonKey);
+    return window.supabase.createClient(url, anonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+        }
+    });
 }
 
 function showAuthMessage(message, type = "error") {
@@ -508,6 +514,17 @@ async function initAuthPage() {
     if (!canContinue) {
         return;
     }
+
+    client.auth.onAuthStateChange((event, session) => {
+        if (session?.user && authGuard === "guest") {
+            window.location.replace("/");
+            return;
+        }
+
+        if (!session && authGuard === "protected" && event === "SIGNED_OUT") {
+            window.location.replace("/login");
+        }
+    });
 
     bindLogout(client);
     bindLogin(client);
