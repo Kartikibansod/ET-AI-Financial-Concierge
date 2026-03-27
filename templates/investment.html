@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Investment Dashboard{% endblock %}
+{% block extra_head %}<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>{% endblock %}
+{% block body_attrs %}data-page="dashboard" data-section="investment" data-auth-guard="protected"{% endblock %}
+{% block body_class %}auth-pending{% endblock %}
+
+{% block content %}
+<main class="page-shell dashboard-shell">
+    <section class="dashboard-panel">
+        <header class="dashboard-header">
+            <div>
+                <p class="eyebrow">Investment Dashboard</p>
+                <h1>Investment Concierge</h1>
+            </div>
+            <div class="header-actions">
+                <a class="back-link" href="/">Back Home</a>
+                <div class="user-menu">
+                    <button class="user-menu-trigger" id="user-menu-trigger" type="button" aria-expanded="false" aria-controls="user-menu-panel">
+                        <span class="user-menu-icon" id="user-menu-icon">ET</span>
+                    </button>
+                    <div class="user-menu-panel hidden" id="user-menu-panel">
+                        <div class="user-menu-identity">
+                            <div class="user-menu-name" id="user-menu-name">ET User</div>
+                        </div>
+                        <div class="user-menu-tabs">
+                            <button class="user-menu-tab active" type="button" data-user-tab="profile">Profile</button>
+                            <button class="user-menu-tab" type="button" data-user-tab="settings">Settings</button>
+                        </div>
+                        <div class="user-menu-content" id="user-profile-panel">
+                            <div class="user-info-line" id="profile-user-type">Type: Student</div>
+                            <div class="user-info-line" id="profile-goal">Goal: Learn</div>
+                            <div class="user-info-line" id="profile-risk">Risk: Medium</div>
+                            <div class="user-info-line" id="personality-badge">Detected Profile: Balanced Learner</div>
+                        </div>
+                        <div class="user-menu-content hidden" id="user-settings-panel">
+                            <label class="field">
+                                <span>Name</span>
+                                <input type="text" id="settings-display-name" placeholder="Enter your name">
+                            </label>
+                            <label class="field">
+                                <span>Default Mode</span>
+                                <select id="settings-default-mode">
+                                    <option value="chat">Chat</option>
+                                    <option value="research">Research</option>
+                                    <option value="simplify">Simplify</option>
+                                    <option value="summarize">Summarize</option>
+                                    <option value="alerts">Alerts</option>
+                                    <option value="highlights">Highlights</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Default Simplify Level</span>
+                                <select id="settings-default-simplify-level">
+                                    <option value="basic">Basic</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="advanced">Advanced</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Language</span>
+                                <select id="settings-language">
+                                    <option value="english">English</option>
+                                    <option value="hindi">Hindi</option>
+                                    <option value="marathi">Marathi</option>
+                                </select>
+                            </label>
+                            <div class="settings-actions">
+                                <button class="report-btn" id="save-settings-button" type="button">Save Settings</button>
+                                <button class="mode-btn" id="reset-profile-button" type="button">Reset Profile</button>
+                                <button class="secondary-btn" id="logout-button" type="button">Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-layout">
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-brand-card">
+                    <p class="sidebar-brand-label">ET AI Financial Concierge</p>
+                    <h2>Investment Workspace</h2>
+                    <p class="sidebar-brand-copy">Analytical, data-driven guidance for ideas, risk, and next best investing actions.</p>
+                    <a class="sidebar-home-link" href="/">Back Home</a>
+                </div>
+
+                <div class="mode-panel dashboard-card">
+                    <div class="sidebar-title">AI Modes</div>
+                    <div class="mode-row">
+                        <button class="mode-btn active" data-mode="chat">💬 Ask AI</button>
+                        <button class="mode-btn" data-mode="research">🔍 Deep Research</button>
+                        <button class="mode-btn" data-mode="simplify">🧠 Simplify</button>
+                        <button class="mode-btn" data-mode="summarize">📄 Summarize</button>
+                        <button class="mode-btn" data-mode="alerts">🚨 Alerts</button>
+                        <button class="mode-btn" data-mode="highlights">🔥 Highlights</button>
+                    </div>
+                    <div class="mode-meta">
+                        <label class="field inline-field">
+                            <span>Simplify Level</span>
+                            <select id="simplify-level">
+                                <option value="basic">Basic</option>
+                                <option value="medium">Medium</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </label>
+                        <label class="field inline-field">
+                            <span>🌍 Language</span>
+                            <select id="language-select">
+                                <option value="english">English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="marathi">Marathi</option>
+                            </select>
+                        </label>
+                        <div class="mode-indicator" id="mode-indicator">Mode: Chat</div>
+                        <button class="report-btn" id="report-button" type="button">Generate Report</button>
+                    </div>
+                </div>
+
+                <div class="dashboard-card history-panel">
+                    <div class="history-panel-head">
+                        <div>
+                            <div class="sidebar-title">Chat History</div>
+                            <div class="history-panel-copy" id="history-panel-copy">Recent prompts in this mode</div>
+                        </div>
+                    </div>
+                    <div class="history-list" id="history-list"></div>
+                </div>
+
+                <div class="dashboard-card section-tools-panel">
+                    <div class="sidebar-title">ET Ecosystem</div>
+                    <div class="section-shortcuts" id="section-shortcuts"></div>
+                </div>
+            </aside>
+
+            <div class="dashboard-main">
+                <section class="section-intro section-intro-investment">
+                    <div>
+                        <p class="section-kicker">Investment AI Experience</p>
+                        <h2 id="section-greeting">Hi there 👋</h2>
+                        <p class="section-copy">AI is ready with personalized investment insights, risk-aware guidance, and a sharper market lens built around you.</p>
+                    </div>
+                    <div class="section-intro-grid">
+                        <div class="experience-card">
+                            <div class="experience-card-label">AI Suggestion</div>
+                            <div class="experience-card-title">AI is ready with personalized investment insights</div>
+                            <div class="experience-card-copy">Use Ask AI or Deep Research to compare SIPs, funds, sectors, or stock ideas in context.</div>
+                        </div>
+                        <div class="experience-card">
+                            <div class="experience-card-label">Risk Level</div>
+                            <div class="experience-card-title" id="risk-indicator-card">Balanced profile</div>
+                            <div class="experience-card-copy">Your saved profile shapes how conservative or aggressive suggestions should feel.</div>
+                        </div>
+                        <div class="experience-card">
+                            <div class="experience-card-label">Market Mood</div>
+                            <div class="experience-card-title">Selective optimism</div>
+                            <div class="mini-chart" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="system-status" class="system-status system-status-live">ET Concierge ready</div>
+
+                <div class="quick-actions">
+                    <button class="action-btn" data-quick-message="Start SIP">Start SIP</button>
+                    <button class="action-btn" data-quick-message="Explore Stocks">Explore Stocks</button>
+                </div>
+
+                <div class="source-panel hidden dashboard-card" id="source-panel">
+                    <label class="field">
+                        <span>Paste article link</span>
+                        <input type="url" id="source-link" class="question-input" placeholder="https://example.com/article">
+                    </label>
+                    <label class="field">
+                        <span>Paste article or page content to summarize</span>
+                        <textarea id="source-text" class="source-text" placeholder="Paste long article text or research notes here..."></textarea>
+                    </label>
+                    <div class="source-actions">
+                        <button class="report-btn" id="summarize-button" type="button">Enter and Summarize</button>
+                    </div>
+                </div>
+
+                <div class="report-preview hidden" id="report-preview">
+                    <div class="report-preview-header">
+                        <div>
+                            <p class="eyebrow">Report Preview</p>
+                            <h2 id="report-preview-title">Investment Report</h2>
+                            <p class="report-preview-meta" id="report-preview-meta">Generated from your latest request</p>
+                        </div>
+                        <button class="report-btn" id="download-report-button" type="button">Download PDF</button>
+                    </div>
+                    <div class="report-preview-body" id="report-preview-body"></div>
+                </div>
+
+                <div class="chat-stage">
+                    <div class="chat-container" id="chat-container"></div>
+                    <div class="input-container">
+                        <input type="text" id="message-input" placeholder="Ask about SIPs, stocks, or ET Markets...">
+                        <button id="send-button">Send</button>
+                        <div id="loading" class="loading hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='script.js', v='20260327a') }}"></script>
+{% endblock %}

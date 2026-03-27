@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}ET AI Financial Concierge{% endblock %}
+
+{% block body_attrs %}data-page="home" data-auth-guard="protected"{% endblock %}
+{% block body_class %}auth-pending{% endblock %}
+
+{% block content %}
+<main class="page-shell home-shell">
+    <section class="hero-card">
+        <div class="hero-copy">
+            <p class="eyebrow">ET AI Financial Concierge</p>
+            <h1>Your AI is ready to adapt to you</h1>
+            <p class="hero-text">Move across investing, news, and learning in one intelligent Economic Times workspace designed around your goals, context, and pace.</p>
+        </div>
+
+        <div class="questionnaire-card">
+            <div class="questionnaire-head">
+                <div>
+                    <h2>Your AI is getting to know you</h2>
+                    <p class="questionnaire-copy">Takes less than 60 seconds and helps personalize your experience across Investment, News, and Learning.</p>
+                </div>
+                <button class="retake-btn" id="retake-questionnaire" type="button">Continue -> Personalize Experience</button>
+            </div>
+
+            <div class="progress-row" id="questionnaire-progress">
+                <span class="progress-copy" id="progress-copy">Step 1 of 4</span>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="questionnaire-flow"></div>
+
+            <div class="navigation-grid hidden" id="recommended-destination">
+                <a class="nav-card" href="/investment" id="dashboard-link-investment" data-dashboard-link>
+                    <strong>Investment</strong>
+                    <span id="dashboard-copy-investment">Explore investing ideas, SIPs, funds, and market opportunities.</span>
+                </a>
+                <a class="nav-card" href="/news" id="dashboard-link-news" data-dashboard-link>
+                    <strong>News</strong>
+                    <span id="dashboard-copy-news">Track business updates, market moves, and what matters right now.</span>
+                </a>
+                <a class="nav-card" href="/learning" id="dashboard-link-learning" data-dashboard-link>
+                    <strong>Learning</strong>
+                    <span id="dashboard-copy-learning">Build confidence with explainers, concepts, and guided learning paths.</span>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='script.js', v='20260327a') }}"></script>
+{% endblock %}

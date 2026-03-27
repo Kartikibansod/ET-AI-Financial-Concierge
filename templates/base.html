@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ET AI Financial Concierge{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20260327a') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body {% block body_attrs %}{% endblock %} class="app-root {% block body_class %}{% endblock %}">
+    <div class="app-background" aria-hidden="true">
+        <div class="app-orb app-orb-one"></div>
+        <div class="app-orb app-orb-two"></div>
+        <div class="app-orb app-orb-three"></div>
+    </div>
+    <div class="app-shell">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        window.SUPABASE_URL = "{{ SUPABASE_URL }}";
+        window.SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="{{ url_for('static', filename='auth.js', v='20260327a') }}"></script>
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>
